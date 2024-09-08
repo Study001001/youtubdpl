@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title style="color:rgb(246, 0, 0);">YT-DLP Command Generator</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000;
+            color: #00ff00;
+            padding: 20px;
+        }
+        h1 {
+            color: #00ff00;
+        }
+        label, input, button {
+            display: block;
+            width: 100%;
+            max-width: 600px;
+            margin: 10px auto;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        input {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        button.copy-btn {
+            cursor: pointer;
+            padding: 5px 10px;
+            background-color: #22672d;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-size: 14px;
+            margin-right: 10px;
+            width: auto;
+        }
+        .command {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #111;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+        .command strong {
+            color: #00ff00;
+        }
+        .copied-message {
+            display: inline-block;
+            color: #ff0000;
+            font-size: 12px;
+        }
+        .user-input {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+<h1 style="color:rgb(255, 30, 30);">YT-DLP Command Generator</h1>
+
+<!-- YouTube Link Input -->
+<label for="yt-link">Input YouTube Link:</label>
+<input type="text" id="yt-link" placeholder="Enter YouTube Link here" value="">
+
+<!-- Default Quality Download -->
+<div class="command">
+    <strong># Default quality download:</strong> 
+    <p id="default-command"></p>
+    <button class="copy-btn" onclick="copyCommand('default-command', 'default-copied')">Copy</button>
+    <span id="default-copied" class="copied-message"></span>
+</div>
+
+<!-- List Quality -->
+<div class="command">
+    <strong># List out the Quality:</strong> 
+    <p id="list-quality-command"></p>
+    <button class="copy-btn" onclick="copyCommand('list-quality-command', 'list-quality-copied')">Copy</button>
+    <span id="list-quality-copied" class="copied-message"></span>
+</div>
+
+<!-- Download by Quality ID and Best Audio -->
+<div class="command">
+    <strong># Download by specific quality ID from list and best audio:</strong> 
+    <input type="text" id="quality-id" class="user-input" placeholder="Enter quality ID">
+    <p id="id-quality-command"></p>
+    <button class="copy-btn" onclick="copyCommand('id-quality-command', 'id-quality-copied')">Copy</button>
+    <span id="id-quality-copied" class="copied-message"></span>
+</div>
+
+<!-- Custom Rename -->
+<div class="command">
+    <strong># Custom rename (Example):</strong> 
+    <input type="text" id="custom-name" class="user-input" placeholder="Enter custom name">
+    <p id="custom-rename-command"></p>
+    <button class="copy-btn" onclick="copyCommand('custom-rename-command', 'custom-rename-copied')">Copy</button>
+    <span id="custom-rename-copied" class="copied-message"></span>
+</div>
+
+<!-- Download Playlist from Text File -->
+<div class="command">
+    <strong># Download playlist from a text file:</strong> 
+    <input type="text" id="playlist-path" class="user-input" placeholder="Enter path to text file">
+    <p id="playlist-command"></p>
+    <button class="copy-btn" onclick="copyCommand('playlist-command', 'playlist-copied')">Copy</button>
+    <span id="playlist-copied" class="copied-message"></span>
+</div>
+
+<script>
+    document.getElementById('yt-link').addEventListener('input', generateCommands);
+    document.getElementById('quality-id').addEventListener('input', generateCommands);
+    document.getElementById('custom-name').addEventListener('input', generateCommands);
+    document.getElementById('playlist-path').addEventListener('input', generateCommands);
+
+    function generateCommands() {
+        const link = document.getElementById('yt-link').value;
+        const qualityId = document.getElementById('quality-id').value || 'ID'; // Use 'ID' as placeholder
+        const customName = document.getElementById('custom-name').value || 'Custom name'; // Use 'Custom name' as placeholder
+        const playlistPath = document.getElementById('playlist-path').value || 'path to the text file'; // Placeholder for path
+
+        document.getElementById('default-command').textContent = `yt-dlp ${link}`;
+        document.getElementById('list-quality-command').textContent = `yt-dlp -F ${link}`;
+        document.getElementById('id-quality-command').textContent = `yt-dlp -f ${qualityId}+bestaudio ${link}`;
+        document.getElementById('custom-rename-command').textContent = `yt-dlp -f bestvideo+bestaudio ${link} -o "${customName}"`;
+        document.getElementById('playlist-command').textContent = `yt-dlp -f bestvideo+bestaudio -a "${playlistPath}"`;
+    }
+
+    function copyCommand(elementId, messageId) {
+        const command = document.getElementById(elementId).textContent;
+        navigator.clipboard.writeText(command).then(() => {
+            showCopiedMessage(messageId);
+        }, (err) => {
+            alert('Failed to copy command!');
+        });
+    }
+
+    function showCopiedMessage(messageId) {
+        const messageElement = document.getElementById(messageId);
+        messageElement.textContent = "Copied!";
+        setTimeout(() => {
+            messageElement.textContent = "";
+        }, 2000); // Message disappears after 2 seconds
+    }
+
+    // Generate initial commands on page load
+    generateCommands();
+</script>
+
+</body>
+</html>
